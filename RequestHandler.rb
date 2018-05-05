@@ -26,9 +26,29 @@ class RequestHandler < WEBrick::HTTPServlet::AbstractServlet
 
     def do_POST(request, response)
         xml = load_xml(request.body)
-        xsd = load_xsd('myXSD.xsd')
-        puts request
+        xsd = load_xsd('methodCall.xsd')
+
+        return_value = '3'
+        
+        if xml_validation(xml)
+            if xsd_validation(xml, xsd)
+                return_value = '0'
+            else
+                return_value = '1'
+            end
+        else
+            return_value = '2'
+        end
+
         response.status = 200
+        response.content_type = 'text/xml'
+        response.body =
+        '<?xml version="1.0"?>
+        <methodReturn>
+            <methodName>consultarStatus</methodName>
+            <value>' + return_value + '</value>
+        </methodReturn>'
+
     end
 
     def xml_validation(xml)
