@@ -25,6 +25,6 @@ class RequestHandler < WEBrick::HTTPServlet::AbstractServlet
 end
 
 server = WEBrick::HTTPServer.new(:Port => 5656)
-server.mount "/", RequestsHandler 
+server.mount "/", RequestHandler 
 trap "INT" do server.shutdown end
 server.start
