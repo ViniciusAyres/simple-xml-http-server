@@ -6,7 +6,7 @@ class RequestHandler < WEBrick::HTTPServlet::AbstractServlet
     puts request
     response.status = 200
   end
-  
+
   def do_POST(request, response)
     puts request
     response.status = 200
@@ -21,6 +21,7 @@ class RequestHandler < WEBrick::HTTPServlet::AbstractServlet
     doc = Nokogiri::XML(xml)
     xsd = Nokogiri::XML::Schema(open('myXSD.xsd'))
     xsd.validate(doc).length == 0
+  end
 end
 
 server = WEBrick::HTTPServer.new(:Port => 5656)
