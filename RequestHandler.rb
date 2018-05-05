@@ -8,9 +8,11 @@ class RequestHandler < WEBrick::HTTPServlet::AbstractServlet
 
         return_value = '0'
 
-        if(xml_validation(xml) and xsd_validation(xml, xsd))
+        if(xml_validation(xml) and xsd_validation(xml, xsd) and 
+            xml.xpath('//methodCall/methodName').text == 'consultarStatus')
+
             cpf = xml.xpath('//methodCall/params/param/cpf').text
-            return_value = consultar_status(cpf)
+            return_value = get_status(cpf)
         end
 
         response.status = 200
@@ -67,7 +69,7 @@ class RequestHandler < WEBrick::HTTPServlet::AbstractServlet
         Nokogiri::XML::Schema(open(path))
     end
 
-    def consultar_status(cpf)
+    def get_status(cpf)
         if cpf == '00000000001'
             '1'
         elsif cpf == '00000000002'
@@ -81,10 +83,10 @@ class RequestHandler < WEBrick::HTTPServlet::AbstractServlet
         end
     end  
 
-    private :xml_validation, :xsd_validation, :load_xml, :load_xsd, :consultar_status
+    private :xml_validation, :xsd_validation, :load_xml, :load_xsd, :get_status
 end
 
-server = WEBrick::HTTPServer.new(:Port => 5656)
-server.mount "/", RequestHandler 
-trap "INT" do server.shutdown end
-server.start
+#server = WEBrick::HTTPServer.new(:Port => 5656)
+#server.mount "/", RequestHandler 
+#trap "INT" do server.shutdown end
+#server.start
