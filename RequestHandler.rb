@@ -2,36 +2,66 @@ require 'nokogiri'
 require 'webrick'
 
 class RequestHandler < WEBrick::HTTPServlet::AbstractServlet
-  def do_GET(request, response)
-    xml = load_xml(request.body)
-    xsd = load_xsd('myXSD.xsd')
-    response.status = 200
-  end
+    def do_GET(request, response)
+        xml = load_xml(request.body)
+        xsd = load_xsd('methodCall.xsd')
 
-  def do_POST(request, response)
-    xml = load_xml(request.body)
-    xsd = load_xsd('myXSD.xsd')
-    puts request
-    response.status = 200
-  end
+        return_value = '0'
 
-  def xml_validation(xml)
-    doc.errors.length == 0
-  end
+        if(xml_validation(xml) and xsd_validation(xml, xsd))
+            cpf = xml.xpath('//methodCall/params/param/cpf').text
+            return_value = consultar_status(cpf)
+        end
 
-  def xsd_validation(xml, xsd)
-    xsd.validate(xml).length == 0
-  end
+        response.status = 200
+        response.content_type = 'text/xml'
+        response.body =
+        '<?xml version="1.0"?>
+        <methodReturn>
+            <methodName>consultarStatus</methodName>
+            <value>' + return_value + '</value>
+        </methodReturn>'
 
-  def load_xml(xml)
-    Nokogiri::XML(xml)
-  end
+    end
 
-  def load_xsd(path)
-    Nokogiri::XML::Schema(open(path))
-  end
+    def do_POST(request, response)
+        xml = load_xml(request.body)
+        xsd = load_xsd('myXSD.xsd')
+        puts request
+        response.status = 200
+    end
 
-  private :xml_validation, :xsd_validation, :load_xml, :load_xsd
+    def xml_validation(xml)
+        xml.errors.length == 0
+    end
+
+    def xsd_validation(xml, xsd)
+        xsd.validate(xml).length == 0
+    end
+
+    def load_xml(xml)
+        Nokogiri::XML(xml)
+    end
+
+    def load_xsd(path)
+        Nokogiri::XML::Schema(open(path))
+    end
+
+    def consultar_status(cpf)
+        if cpf == '00000000001'
+            '1'
+        elsif cpf == '00000000002'
+            '2'
+        elsif cpf == '00000000003'
+            '3'
+        elsif cpf == '00000000004'
+            '4'
+        else
+            '0'
+        end
+    end  
+
+    private :xml_validation, :xsd_validation, :load_xml, :load_xsd, :consultar_status
 end
 
 server = WEBrick::HTTPServer.new(:Port => 5656)
