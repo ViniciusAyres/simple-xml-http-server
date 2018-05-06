@@ -6,28 +6,13 @@ class RequestHandler < WEBrick::HTTPServlet::AbstractServlet
         xml = load_xml(request.body)
         xsd = load_xsd('methodCall.xsd')
 
-        
-        if not xml_validation(xml)
-            return_value = '-1'
-        
-        elsif not xsd_validation(xml, xsd)
-            return_value = '-2'
-        
-        elsif xml.xpath('//methodCall/methodName').text != 'consultarStatus'
-            return_value = '-1'
-
-        else 
-            cpf = xml.xpath('//methodCall/params/param/cpf').text
-            return_value = get_status(cpf)
-        end
-
         response.status = 200
         response.content_type = 'text/xml'
         response.body =
         '<?xml version="1.0"?>
         <methodReturn>
             <methodName>consultarStatus</methodName>
-            <value>' + return_value + '</value>
+            <value>' + get_status(xml, xsd) + '</value>
         </methodReturn>'
 
     end
@@ -75,17 +60,27 @@ class RequestHandler < WEBrick::HTTPServlet::AbstractServlet
         Nokogiri::XML::Schema(open(path))
     end
 
-    def get_status(cpf)
-        if cpf == '00000000001'
-            '1'
-        elsif cpf == '00000000002'
-            '2'
-        elsif cpf == '00000000003'
-            '3'
-        elsif cpf == '00000000004'
-            '4'
-        else
-            '0'
+    def get_status(xml, xsd)
+        if not xml_validation(xml)
+            '-1'
+        elsif not xsd_validation(xml, xsd)
+            '-2'
+        elsif xml.xpath('//methodCall/methodName').text != 'consultarStatus'
+            '-1'
+        else 
+            cpf = xml.xpath('//methodCall/params/param/cpf').text
+
+            if cpf == '00000000001'
+                '1'
+            elsif cpf == '00000000002'
+                '2'
+            elsif cpf == '00000000003'
+                '3'
+            elsif cpf == '00000000004'
+                '4'
+            else
+                '0'
+            end
         end
     end  
 
