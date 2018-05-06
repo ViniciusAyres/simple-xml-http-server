@@ -5,6 +5,7 @@ class RequestHandler < WEBrick::HTTPServlet::AbstractServlet
     def do_GET(request, response)
         xml = load_xml(request.body)
         xsd = load_xsd('methodCall.xsd')
+        puts request.body
 
         response.status = 200
         response.content_type = 'text/xml'
@@ -20,6 +21,7 @@ class RequestHandler < WEBrick::HTTPServlet::AbstractServlet
     def do_POST(request, response)
         xml = load_xml(request.body)
         xsd = load_xsd('methodCall.xsd')
+        puts request.body
 
         return_value = '3'
         
@@ -38,7 +40,7 @@ class RequestHandler < WEBrick::HTTPServlet::AbstractServlet
         response.body =
         '<?xml version="1.0"?>
         <methodReturn>
-            <methodName>consultarStatus</methodName>
+            <methodName>submeter</methodName>
             <value>' + return_value + '</value>
         </methodReturn>'
 
