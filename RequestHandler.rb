@@ -6,11 +6,17 @@ class RequestHandler < WEBrick::HTTPServlet::AbstractServlet
         xml = load_xml(request.body)
         xsd = load_xsd('methodCall.xsd')
 
-        return_value = '0'
+        
+        if not xml_validation(xml)
+            return_value = '-1'
+        
+        elsif not xsd_validation(xml, xsd)
+            return_value = '-2'
+        
+        elsif xml.xpath('//methodCall/methodName').text != 'consultarStatus'
+            return_value = '-1'
 
-        if(xml_validation(xml) and xsd_validation(xml, xsd) and 
-            xml.xpath('//methodCall/methodName').text == 'consultarStatus')
-
+        else 
             cpf = xml.xpath('//methodCall/params/param/cpf').text
             return_value = get_status(cpf)
         end
