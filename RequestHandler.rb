@@ -3,7 +3,7 @@ require 'webrick'
 
 class RequestHandler < WEBrick::HTTPServlet::AbstractServlet
     def do_GET(request, response)
-        xml = load_xml(request.body)
+        xml = load_xml(request.query[''])
         xsd = load_xsd('methodCall.xsd')
         puts request.body
 
