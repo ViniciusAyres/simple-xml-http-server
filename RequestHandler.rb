@@ -64,9 +64,9 @@ class RequestHandler < WEBrick::HTTPServlet::AbstractServlet
 
     def get_status(xml, xsd)
         if not xml_validation(xml)
-            '-1'
-        elsif not xsd_validation(xml, xsd)
             '-2'
+        elsif not xsd_validation(xml, xsd)
+            '-1'
         elsif xml.xpath('//methodCall/methodName').text != 'consultarStatus'
             '-1'
         else 
